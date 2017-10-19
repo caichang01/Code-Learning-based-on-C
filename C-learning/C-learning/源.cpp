@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include<stdio.h>http://bitren.org/
 #include<stdlib.h>
 
 #define TRUE 1
@@ -95,12 +95,12 @@ Status compare(Elemtype e1, Elemtype e2)
 }
 
 /*查找元素*/
-Status FindElem(const SqList L, Elemtype e, Status(*compare)(Elemtype, Elemtype)
+Status FindElem(const SqList L, Elemtype e, Status(*compare)(Elemtype, Elemtype))
 {
 	int i;
 	for ( i = 0; i < L.length; i++)
 	{
-		if (!(*compare)(L.elem[i], e)
+		if (!(*compare)(L.elem[i], e))
 		{
 			return i + 1;
 		}
@@ -162,17 +162,109 @@ Status  NextElem(const SqList L, Elemtype cur_e, Elemtype *next_e)
 /*插入元素*/
 Status InsertElem(SqList *L, int i, Elemtype e)
 {
-	Elemtype *new;
+	Elemtype *n;
 	if (i < 1 || i > L->length + 1)
 	{
 		return ERROR;
 	}
 	if (L->length >= L->size)
 	{
-		new = (Elemtype*)
+		n = (Elemtype*)realloc(L->elem, (L->size + INCREMENT_SIZE) * sizeof(Elemtype));
+		if (!n)
+		{
+			return ERROR;
+		}
+		L->elem = n;
+		L->size += INCREMENT_SIZE;
 	}
+	Elemtype *p = &L->elem[i - 1];
+	Elemtype *q = &L->elem[L->length - 1];
+	for (; q >= p; q--)
+	{
+		*(q + 1) = *q;
+	}
+	*p = e;
+	++L->length;
+	return OK;
 }
+
+/*删除元素并返回值*/
+Status DeleteElem(SqList *L, int i, Elemtype *e)
+{
+	if (i < 1 || i > L->length)
+	{
+		return ERROR;
+	}
+	Elemtype *p = &L->elem[i - 1];
+	*e = *p;
+	for ( ; p < &L->elem[L->length]; p++)
+	{
+		*(p) = *(p + 1);
+	}
+	--L->length;
+	return OK;
+}
+
+/*访问元素*/
+void visit(Elemtype e)
+{
+	printf("%d", e);
+}
+
+/*遍历线性表*/
+Status TraverseList(const SqList L, void(*visit)(Elemtype))
+{
+	int i;
+	for ( i = 0; i < L.length; i++)
+	{
+		visit(L.elem[i]);
+	}
+	return OK;
+}
+
+/*主函数测试*/
 int main()
 {
-		
+	SqList L;
+	if (InitList(&L))
+	{
+		Elemtype e;
+		printf("init_success\n");
+		int i;
+		for ( i = 0; i < 10; i++)
+		{
+			InsertElem(&L, i + 1, i);
+		}
+		printf("Length is %d\n", getLength(L));
+		if (GetElem(L, i, &e))
+		{
+			printf("The first element is %d\n", e);
+		}
+		else
+		{
+			printf("Element is not exist\n");
+		}
+		if (isEmpty(L))
+		{
+			printf("List is empty\n");
+		}
+		else
+		{
+			printf("List is not empty\n");
+		}
+		printf("The 5 at %d\n", FindElem(L, 5, *compare));
+		PreElem(L, 6, &e);
+		printf("The 6's previous element is %d\n", e);
+		NextElem(L, 6, &e);
+		printf("The 6's next element is %d\n", e);
+		DeleteElem(&L, 1, &e);
+		printf("Delete first element is %d\n", e);
+		printf("List:");
+		TraverseList(L, visit);
+		if (DestroyList(&L))
+		{
+			printf("\ndestroy_success\n");
+		}
+	}
+
 }
