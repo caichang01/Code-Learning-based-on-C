@@ -1,4 +1,4 @@
-#include<stdio.h>http://bitren.org/
+#include<stdio.h>
 #include<stdlib.h>
 
 #define TRUE 1
