@@ -218,10 +218,32 @@ void TraverseList(LinkList L, void(*visit)(Elemtype))
 	}
 }
 
+/*反转单链表*/
+LinkList ReverseList(LinkList L)
+{
+	if (L == NULL || L->Next == NULL)
+	{
+		return L;
+	}
+	LinkList p = L;
+	LinkList q = L->Next;
+	L->Next = NULL;
+	LinkList r;
+	while (q)
+	{
+		r = q->Next;
+		q->Next = p;
+		p = q;
+		q = r;
+	}
+	L = p;
+	return L;
+}
+
 /*主函数测试*/
 int main()
 {
-	LinkList L;
+	LinkList L, temp;
 	InitList(&L);
 	Elemtype e;
 	int i;
@@ -235,35 +257,24 @@ int main()
 		printf("List is empty!\n");
 	}
 
-	for ( i = 0; i < 10; i++)
+	for (i = 0; i < 10; i++)
 	{
 		InsertElem(L, i + 1, i);
-	}
-	
-	if (GetElem(L, 1, &e))
-	{
-		printf("The first element is %d\n", e);
-	}
-
-	printf("The length is %d\n", GetLength(L));
-
-	printf("The 5 at %d\n",FindElem(L, 5, *compare));
-
-	PreElem(L, 6, &e);
-	printf("The 6's previous element is %d\n", e);
-
-	NextElem(L, 6, &e);
-	printf("The 6's next element is %d\n", e);
-
-	DeleteElem(L, 1, &e);
-	printf("Delete first element is %d\n", e);
+	}//对单链表予以赋值
 
 	printf("List:");
-	TraverseList(L, visit);
+	TraverseList(L, visit);//遍历单链表
+	printf("\n");
 
-	DestroyList(&L);
-	if (!L)
+	/*反转单链表并遍历*/
+	printf("The list is reversed to:");
+	L = ReverseList(L);
+	temp = L;
+	//TraverseList(L, visit);
+	for ( i = 0; i < 10; i++)//单链表反转后，头指针变为尾指针，新的头指针对应的数据不再为空，因此无法再使用之前的遍历函数
 	{
-		printf("\nDestroy success!\n");
+		visit(temp->data);
+		temp = temp->Next;
 	}
+	printf("\n");
 }
